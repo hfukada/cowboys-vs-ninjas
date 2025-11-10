@@ -1,0 +1,13 @@
+{
+  "name": "ninjas-vs-cowboys",
+  "version": "1.0.0",
+  "description": "A 2D top-down browser game: Ninjas vs Cowboys",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "redis": "^5.9.0"
+  }
+}
