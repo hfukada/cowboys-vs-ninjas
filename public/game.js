@@ -10,9 +10,10 @@ const CONFIG = {
     cowboySize: 16,
     bulletSize: 4,
     treeDensity: 1.7, // trees per 10000 square pixels (100x100 block)
-    gameSpeed: 0.68 // Global speed multiplier (0.8 * 0.85 = 32% slower total)
+    gameSpeed: 0.68, // Global speed multiplier (0.8 * 0.85 = 32% slower total)
+    minCount: 10 // Minimum ninjas/cowboys per game
 };
-const COUNTDOWNTIME_MS = 30000
+const COUNTDOWNTIME_MS = 30000;
 
 // Game State
 let canvas, ctx;
@@ -28,8 +29,8 @@ let ninjaWins = 0;
 let cowboyWins = 0;
 let autoRestartTimeout = null;
 let splashScreenInterval = null;
-let nextGameNinjas = 10;
-let nextGameCowboys = 10;
+let nextGameNinjas = CONFIG.minCount;
+let nextGameCowboys = CONFIG.minCount;
 let nextGameTreeDensity = 1;
 let spawnPollInterval = null;
 
@@ -429,7 +430,6 @@ async function loadWinTallies() {
         // Load balanced tree density from server
         if (data.treeDensity !== undefined) {
             CONFIG.treeDensity = data.treeDensity;
-            document.getElementById('tree-density').value = CONFIG.treeDensity;
         }
     } catch (err) {
         console.error('Error loading win tallies:', err);
@@ -509,16 +509,16 @@ function drawSplashScreen() {
 
     // Draw vs
     ctx.font = 'bold 36px Courier New';
-    ctx.fillStyle = '#ff6b6b';
+    ctx.fillStyle = '#000000';
     ctx.fillText('VS', canvas.width / 2, canvas.height / 2);
 
     // Draw ninja count
     ctx.font = 'bold 32px Courier New';
-    ctx.fillStyle = '#9b59b6';
+    ctx.fillStyle = '#000000';
     ctx.fillText(`🥷 ${nextGameNinjas} Ninjas`, canvas.width / 2 - 150, canvas.height / 2 - 30);
 
     // Draw cowboy count
-    ctx.fillStyle = '#c0392b';
+    ctx.fillStyle = '#000000';
     ctx.fillText(`${nextGameCowboys} Cowboys 🤠`, canvas.width / 2 + 150, canvas.height / 2 - 30);
 
     // Draw countdown
@@ -592,8 +592,8 @@ async function startGame() {
     } catch (err) {
         console.error('Error fetching config:', err);
         // Fall back to local CONFIG values with minimums
-        CONFIG.ninjaCount = Math.max(10, CONFIG.ninjaCount);
-        CONFIG.cowboyCount = Math.max(10, CONFIG.cowboyCount);
+        CONFIG.ninjaCount = Math.max(CONFIG.minCount, CONFIG.ninjaCount);
+        CONFIG.cowboyCount = Math.max(CONFIG.minCount, CONFIG.cowboyCount);
     }
 
     // Clear game state but preserve win tally
@@ -657,6 +657,11 @@ async function resetGame() {
     gameOver = false;
     winner = null;
 
+    // Reset next game counts to minimums
+    nextGameNinjas = CONFIG.minCount;
+    nextGameCowboys = CONFIG.minCount;
+    nextGameTreeDensity = 1;
+
     // Reset counters on server
     try {
         const response = await fetch('/cvn/reset', {
@@ -687,7 +692,8 @@ function updateStatus(message) {
     // Update alive counts
     document.getElementById('ninjas-alive').textContent = ninjas.filter(n => n.alive).length;
     document.getElementById('cowboys-alive').textContent = cowboys.filter(c => c.alive).length;
-    console.log(message);
+    document.getElementById('ninjas-total').textContent = ninjas.length;
+    document.getElementById('cowboys-total').textContent = cowboys.length;
 }
 
 function checkCollisions() {
@@ -759,8 +765,6 @@ async function recordWin(winner) {
             // Update balanced tree density from server
             if (data.treeDensity !== undefined) {
                 CONFIG.treeDensity = data.treeDensity;
-                document.getElementById('tree-density').value = CONFIG.treeDensity.toFixed(1);
-                console.log(`Tree density adjusted to ${CONFIG.treeDensity.toFixed(1)} for balance`);
             }
         }
     } catch (err) {
