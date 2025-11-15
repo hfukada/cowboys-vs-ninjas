@@ -13,8 +13,8 @@ const CONFIG = {
     gameSpeed: 0.68, // Global speed multiplier (0.8 * 0.85 = 32% slower total)
     minCount: 10 // Minimum ninjas/cowboys per game
 };
-// const COUNTDOWNTIME_MS = 300000;
-const COUNTDOWNTIME_MS = 3000;
+const COUNTDOWNTIME_MS = 300000;
+//const COUNTDOWNTIME_MS = 3000;
 
 // Game State
 let canvas, ctx;
