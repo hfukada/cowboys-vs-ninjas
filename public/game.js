@@ -13,7 +13,8 @@ const CONFIG = {
     gameSpeed: 0.68, // Global speed multiplier (0.8 * 0.85 = 32% slower total)
     minCount: 10 // Minimum ninjas/cowboys per game
 };
-const COUNTDOWNTIME_MS = 30000;
+// const COUNTDOWNTIME_MS = 300000;
+const COUNTDOWNTIME_MS = 3000;
 
 // Game State
 let canvas, ctx;
@@ -32,7 +33,6 @@ let splashScreenInterval = null;
 let nextGameNinjas = CONFIG.minCount;
 let nextGameCowboys = CONFIG.minCount;
 let nextGameTreeDensity = 1;
-let spawnPollInterval = null;
 
 // Tree Class
 class Tree {
@@ -633,12 +633,6 @@ async function startGame() {
     ninjas.forEach(ninja => ninja.selectTarget());
     cowboys.forEach(cowboy => cowboy.selectTarget());
 
-    // Start polling for spawn events every 200ms
-    if (spawnPollInterval) {
-        clearInterval(spawnPollInterval);
-    }
-    spawnPollInterval = setInterval(pollSpawnEvents, 200);
-
     updateStatus('Battle in progress!');
 }
 
@@ -784,11 +778,6 @@ function checkWinCondition() {
         updateStatus('🤠 Cowboys Win! 🤠');
         gameRunning = false;
 
-        // Stop polling for spawn events
-        if (spawnPollInterval) {
-            clearInterval(spawnPollInterval);
-            spawnPollInterval = null;
-        }
 
         // Show win message for 2 seconds, then splash screen for 5 seconds
         setTimeout(() => {
@@ -804,12 +793,6 @@ function checkWinCondition() {
         recordWin('Ninjas');
         updateStatus('🥷 Ninjas Win! 🥷');
         gameRunning = false;
-
-        // Stop polling for spawn events
-        if (spawnPollInterval) {
-            clearInterval(spawnPollInterval);
-            spawnPollInterval = null;
-        }
 
         // Show win message for 2 seconds, then splash screen for 5 seconds
         setTimeout(() => {
