@@ -241,19 +241,11 @@ app.post('/cvn/win', async (req, res) => {
 app.post('/cvn/reset', async (req, res) => {
   await redisClient.set('cvn:ninjaCounter', '10');
   await redisClient.set('cvn:cowboyCounter', '10');
-  await redisClient.set('cvn:ninjaWins', '0');
-  await redisClient.set('cvn:cowboyWins', '0');
-  await redisClient.set('cvn:treeDensity', '1');
 
-  console.log('All counters reset');
+  console.log('All spawn counters reset');
 
   res.json({
     success: true,
-    ninjas: 0,
-    cowboys: 0,
-    ninjaWins: 0,
-    cowboyWins: 0,
-    treeDensity: 1
   });
 });
 
